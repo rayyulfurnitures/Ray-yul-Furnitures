@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ray-Yul Furniture</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <nav class="container mx-auto flex items-center justify-between py-2 px-2 sm:py-4 sm:px-4 relative">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <img src="images/logo.png" alt="Ray-Yul Logo" class="h-8 w-8 sm:h-14 sm:w-14 object-contain">
+                <h1 class="text-sm sm:text-xl md:text-2xl font-bold text-indigo-700 whitespace-nowrap">Ray-Yul Furniture
+                </h1>
+            </div>
+            <!-- Hamburger Icon (mobile only) -->
+            <button id="nav-toggle" class="sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-7 h-7 text-indigo-700" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <!-- Nav Links -->
+            <div id="nav-menu"
+                class="hidden sm:block absolute sm:static top-full left-0 w-full sm:w-auto bg-white sm:bg-transparent z-50 shadow sm:shadow-none">
+                <ul
+                    class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base py-2 sm:py-0">
+                    <li><a href="index.html" class="hover:text-indigo-600 font-semibold block px-4 py-2 sm:p-0">Home</a>
+                    </li>
+                    <li><a href="about.html" class="hover:text-indigo-600 font-semibold block px-4 py-2 sm:p-0">About
+                            Us</a></li>
+                    <li><a href="bookings.html"
+                            class="hover:text-indigo-600 font-semibold block px-4 py-2 sm:p-0">Bookings</a></li>
+                    <li>
+                        <a href="#" id="login-btn"
+                            class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded hover:bg-indigo-700 transition block text-center w-full md:w-auto">
+                            Login
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Placeholder -->
+    <main class="flex-1">
+        <section class="container mx-auto px-4 py-12 max-w-4xl space-y-16">
+
+            <!-- Hero Section -->
+            <div class="flex flex-col md:flex-row items-center md:space-x-10 space-y-6 md:space-y-0">
+                <div class="flex-1">
+                    <h2 class="text-3xl font-bold mb-4 flex items-center gap-2 text-indigo-700">
+                        Ray-Yul Furniture: Empowering Communities. Redefining Craftsmanship.
+                    </h2>
+                    <p class="mb-6 text-gray-700 leading-relaxed">
+                        <span class="font-semibold">Ray-Yul Furniture</span> is a forward-thinking Bhutanese enterprise
+                        committed to delivering durable, high-quality metal and wooden furniture that reflects both
+                        modern
+                        functionality and timeless craftsmanship. Founded in <span class="font-semibold">2022</span> and
+                        headquartered in <span class="font-semibold">Hurungpam, Mongar</span>, Ray-Yul Furniture is more
+                        than a
+                        manufacturing business — it is a mission-driven enterprise that blends entrepreneurship, skill
+                        development, and community empowerment.
+                    </p>
+                </div>
+                <img src="images/logo.png" alt="Ray-Yul Furniture Showroom"
+                    class="w-full md:w-1/3 rounded-full shadow-lg border-4 border-indigo-200 shadow-md">
+            </div>
+
+            <!-- Origin Story -->
+            <div
+                class="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-10 space-y-6 md:space-y-0">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">Our Origin Story</h3>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        The foundation of Ray-Yul Furniture is rooted in resilience and transformation. <span
+                            class="font-semibold">Sangay Chophel</span>, our visionary founder, established the company
+                        after
+                        overcoming significant personal and academic challenges. A graduate of <span
+                            class="font-semibold">Nangkor Central School</span>, Sangay redirected his life journey
+                        through
+                        technical training in welding at <span class="font-semibold">Jigme Wangchuk Power Training
+                            Institute</span>, and furniture-making courses at <span
+                            class="font-semibold">Rangjung</span>.
+                    </p>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        He further equipped himself with managerial expertise through entrepreneurship programs at <span
+                            class="font-semibold">Rangjung Technical Training Institute</span> and the <span
+                            class="font-semibold">ITEC program in India</span>, setting the stage for a business built
+                        on
+                        excellence and purpose.
+                    </p>
+                </div>
+                <img src="images/origin.jpg" alt="Our Origin Story"
+                    class="w-50 h-56 rounded-full object-cover border-4 border-indigo-200 shadow-md">
+            </div>
+
+            <!-- What We Do -->
+            <div class="flex flex-col md:flex-row items-center md:space-x-10 space-y-6 md:space-y-0">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">What We Do</h3>
+                    <ul class="list-disc pl-6 mb-4 space-y-2 text-gray-700">
+                        <li><span class="font-semibold">Customized wooden and metal furniture</span></li>
+                        <li><span class="font-semibold">Residential and office furnishings</span></li>
+                        <li><span class="font-semibold">Durable, long-lasting products with a warranty of service</span>
+                        </li>
+                        <li><span class="font-semibold">Free repair and support for furniture purchased from us</span>
+                        </li>
+                    </ul>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        Our enterprise is defined by innovation, craftsmanship, and service excellence, <br>ensuring
+                        that every
+                        product meets the needs of modern customers while maintaining <br> high durability standards.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Mission & Vision -->
+            <div
+                class="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-10 space-y-6 md:space-y-0">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">Our Mission</h3>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        To <span class="font-semibold">empower individuals and communities</span> through job creation,
+                        skill
+                        development, and the delivery of affordable, premium-quality furniture that enhances both
+                        lifestyle and
+                        livelihoods.
+                    </p>
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">Our Vision</h3>
+                    <p class="mb-4 text-gray-700 leading-relaxed">
+                        To become Bhutan’s <span class="font-semibold">leading socially-responsible furniture
+                            enterprise</span>,
+                        recognized for craftsmanship, customer satisfaction, and its contributions to community and
+                        economic
+                        development.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- CEO Section -->
+            <div
+                class="flex flex-col md:flex-row items-center md:space-x-10 space-y-6 md:space-y-0 bg-indigo-50 rounded-lg p-6 shadow">
+                <img src="images/CEO.jpg" alt="Sangay Chophel, Founder & CEO"
+                    class="w-40 h-42 rounded-full object-cover border-4 border-indigo-200 shadow-md">
+                <div>
+                    <h3 class="text-xl font-bold text-indigo-800 mb-1">Sangay Chophel</h3>
+                    <p class="text-indigo-600 font-semibold mb-2">Founder & CEO</p>
+                    <blockquote class="border-l-4 border-indigo-400 pl-4 italic text-gray-700">
+                        “Entrepreneurship is about being a problem lover and solver. At Ray-Yul Furniture, we measure
+                        success not only through profits but by the value we bring to the lives of others through
+                        service,
+                        sustainability, and social impact.”<br>
+                        <span class="font-semibold block mt-2">— Sangay Chophel, Founder & CEO</span>
+                    </blockquote>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div
+                class="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-10 space-y-6 md:space-y-0">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">Our Achievements</h3>
+                    <p class="mb-2 text-gray-700">Despite the challenges of launching an enterprise in a competitive
+                        market, Ray-Yul Furniture has:</p>
+                    <ul class="list-disc pl-6 mb-4 space-y-2 text-gray-700">
+                        <li>Secured support from the <span class="font-semibold">DHI BIZAP Fund</span></li>
+                        <li>Established a growing customer base across eastern Bhutan</li>
+                        <li>Created employment opportunities for local youth</li>
+                        <li>Earned trust through transparent service and lasting products</li>
+                    </ul>
+                </div>
+                <img src="images/achievements.png" alt="Our Achievements"
+                    class="w-50 h-52 rounded-full object-cover border-4 border-indigo-200 shadow-md">
+            </div>
+
+            <!-- Commitment -->
+            <div class="flex flex-col md:flex-row items-center md:space-x-10 space-y-6 md:space-y-0">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">Our Commitment</h3>
+                    <p class="mb-2 text-gray-700">Ray-Yul Furniture stands committed to:</p>
+                    <ul class="list-disc pl-6 mb-4 space-y-2 text-gray-700">
+                        <li><span class="font-semibold">Job creation and youth empowerment</span></li>
+                        <li><span class="font-semibold">Providing exceptional after-sales support</span></li>
+                        <li><span class="font-semibold">Sustainably growing with and for the Bhutanese people</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Manager Section -->
+            <div
+                class="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-10 space-y-6 md:space-y-0 bg-indigo-50 rounded-lg p-6 shadow">
+                <img src="images/manager.jpg" alt="Sangay Dorji, Manager"
+                    class="w-40 h-42 rounded-full object-cover border-4 border-indigo-200 shadow-md">
+                <div>
+                    <h3 class="text-xl font-bold text-indigo-800 mb-1">Sangay Dorji</h3>
+                    <p class="text-indigo-600 font-semibold mb-2">Manager</p>
+                    <p class="text-gray-700">
+                        From Khar, Pema Gatshel, <span class="font-semibold">Sangay Dorji</span> holds a <span
+                            class="font-semibold">BCom (Accounting)</span> degree from <span class="font-semibold">Gedu
+                            College of Business Studies</span>.
+                        His expertise in management and finance ensures smooth operations and excellent customer service
+                        at <span class="font-semibold">Ray-Yul Furniture</span>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="mt-10 border-t pt-6 text-gray-700 space-y-2">
+                <div><span class="font-semibold"><i class="fas fa-map-marker-alt text-red-500 mr-1"></i> Head
+                        Office:</span> Phuentsholing, Chukha</div>
+                <div>
+                    <span class="font-semibold"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp:</span>
+                    <a href="https://chat.whatsapp.com/EMOefmS7d076jhfd1NiZKr" target="_blank"
+                        class="text-indigo-600 hover:underline">Join our WhatsApp Group</a>
+                </div>
+                <div>
+                    <span class="font-semibold"><i class="fab fa-tiktok text-black"></i> TikTok:</span>
+                    <a href="https://www.tiktok.com/@rayyul.furniture?_t=ZS-8xVVUnYHCYi&_r=1" target="_blank"
+                        class="text-indigo-600 hover:underline">@rayyul.furniture</a>
+                </div>
+                <div>
+                    <span class="font-semibold"><i class="fab fa-facebook text-blue-600"></i> Facebook:</span>
+                    <a href="https://www.facebook.com/share/197yipcJjj/" target="_blank"
+                        class="text-indigo-600 hover:underline">Ray-Yul Furniture Facebook Page</a>
+                </div>
+                <div><span class="font-semibold"><i class="fas fa-phone-alt text-red-600 mr-1"></i>Contact:</span> +975
+                    77340934</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-500">
+            &copy; 2025 Ray-Yul Furniture. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm">
+            <h3 class="text-xl font-bold mb-4" id="auth-title">Login</h3>
+            <form id="auth-form" class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email" class="w-full border rounded px-3 py-2"
+                    required>
+                <input type="password" id="auth-password" placeholder="Password" class="w-full border rounded px-3 py-2"
+                    required>
+                <!-- Add after the password input in your auth modal -->
+                <div id="password-strength" class="h-2 rounded bg-gray-200 mt-1">
+                    <div id="password-strength-bar" class="h-2 rounded transition-all duration-300"></div>
+                </div>
+                <div id="password-strength-text" class="text-xs mt-1"></div>
+                <div class="flex justify-between">
+                    <button type="submit" id="auth-submit"
+                        class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Login</button>
+                    <button type="button" id="toggle-auth" class="text-indigo-600 hover:underline">Sign Up</button>
+                </div>
+                <button type="button" id="forgot-password"
+                    class="text-sm text-indigo-600 hover:underline w-full text-left mt-2">Forgot Password?</button>
+            </form>
+            <button id="close-auth" class="mt-4 text-gray-500 hover:underline w-full">Close</button>
+            <div id="auth-error" class="text-red-500 mt-2"></div>
+        </div>
+    </div>
+
+    <!-- Spinner Overlay -->
+    <div id="spinner-overlay" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600 border-b-4 border-white"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden">
+        <div id="toast-content" class="px-6 py-3 rounded shadow text-white text-center"></div>
+    </div>
+
+    <!-- Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBO7elH2BDo48m7wu1CCEh-ZIT-5i1EeUc",
+            authDomain: "ray-yul-furniture.firebaseapp.com",
+            projectId: "ray-yul-furniture",
+            storageBucket: "ray-yul-furniture.appspot.com",
+            messagingSenderId: "1009800722761",
+            appId: "1:1009800722761:web:258966e71e86dd9db40298",
+            measurementId: "G-F93Z8VX82E"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const adminEmails = ["rayyulfurniture2023@gmail.com"]; // Add your admin email(s) here
+
+        // Simple login/logout logic for the button
+        const loginBtn = document.getElementById('login-btn');
+        const authModal = document.getElementById('auth-modal');
+        const closeAuth = document.getElementById('close-auth');
+        const toggleAuth = document.getElementById('toggle-auth');
+        const authTitle = document.getElementById('auth-title');
+        const authForm = document.getElementById('auth-form');
+        const authError = document.getElementById('auth-error');
+        const authSubmit = document.getElementById('auth-submit');
+        const forgotPasswordBtn = document.getElementById('forgot-password');
+        let isLogin = true;
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                loginBtn.textContent = "Logout";
+                loginBtn.onclick = (e) => {
+                    e.preventDefault();
+                    firebase.auth().signOut().then(() => {
+                        window.location.href = "index.html";
+                    });
+                };
+                authModal.classList.add('hidden');
+            } else {
+                loginBtn.textContent = "Login";
+                loginBtn.onclick = (e) => {
+                    e.preventDefault();
+                    authModal.classList.remove('hidden');
+                    isLogin = true;
+                    authTitle.textContent = "Login";
+                    toggleAuth.textContent = "Sign Up";
+                    authSubmit.textContent = "Login";
+                    authError.textContent = "";
+                    forgotPasswordBtn.classList.remove('hidden');
+                };
+            }
+        });
+
+        closeAuth.onclick = () => authModal.classList.add('hidden');
+
+        toggleAuth.onclick = () => {
+            isLogin = !isLogin;
+            authTitle.textContent = isLogin ? "Login" : "Sign Up";
+            toggleAuth.textContent = isLogin ? "Sign Up" : "Login";
+            authSubmit.textContent = isLogin ? "Login" : "Sign Up";
+            authError.textContent = "";
+            forgotPasswordBtn.classList.toggle('hidden', !isLogin);
+
+            // Show strength meter only in Sign Up mode
+            if (isLogin) {
+                passwordStrengthDiv.style.display = "none";
+                passwordStrengthText.style.display = "none";
+            } else {
+                passwordStrengthDiv.style.display = "block";
+                passwordStrengthText.style.display = "block";
+            }
+        };
+
+        authForm.onsubmit = async (e) => {
+            e.preventDefault();
+            showSpinner();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            authError.textContent = "";
+            try {
+                if (isLogin) {
+                    await firebase.auth().signInWithEmailAndPassword(email, password);
+                    showToast("Login successful!", "success");
+                } else {
+                    await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    showToast("Signup successful!", "success");
+                }
+            } catch (err) {
+                authError.textContent = err.message;
+                showToast(err.message, "error");
+            }
+            hideSpinner();
+        };
+
+        forgotPasswordBtn.onclick = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            if (!email) {
+                authError.textContent = "Please enter your email above to reset password.";
+                showToast("Please enter your email above to reset password.", "error");
+                return;
+            }
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                authError.textContent = "Password reset email sent! Please check your inbox.";
+                authError.classList.remove("text-red-500");
+                authError.classList.add("text-green-600");
+                showToast("Password reset email sent!", "success");
+            } catch (err) {
+                authError.textContent = err.message;
+                authError.classList.remove("text-green-600");
+                authError.classList.add("text-red-500");
+                showToast(err.message, "error");
+            }
+        };
+
+        const passwordInput = document.getElementById('auth-password');
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        const passwordStrengthDiv = document.getElementById('password-strength');
+        const passwordStrengthText = document.getElementById('password-strength-text');
+
+        // Hide by default (since Login is default)
+        passwordStrengthDiv.style.display = "none";
+        passwordStrengthText.style.display = "none";
+
+        // Show/hide on toggle
+        toggleAuth.onclick = () => {
+            isLogin = !isLogin;
+            authTitle.textContent = isLogin ? "Login" : "Sign Up";
+            toggleAuth.textContent = isLogin ? "Sign Up" : "Login";
+            authSubmit.textContent = isLogin ? "Login" : "Sign Up";
+            authError.textContent = "";
+            forgotPasswordBtn.classList.toggle('hidden', !isLogin);
+
+            // Show strength meter only in Sign Up mode
+            if (isLogin) {
+                passwordStrengthDiv.style.display = "none";
+                passwordStrengthText.style.display = "none";
+            } else {
+                passwordStrengthDiv.style.display = "block";
+                passwordStrengthText.style.display = "block";
+            }
+        };
+
+        // Also hide on modal open for Login
+        loginBtn.onclick = (e) => {
+            e.preventDefault();
+            authModal.classList.remove('hidden');
+            isLogin = true;
+            authTitle.textContent = "Login";
+            toggleAuth.textContent = "Sign Up";
+            authSubmit.textContent = "Login";
+            authError.textContent = "";
+            forgotPasswordBtn.classList.remove('hidden');
+            passwordStrengthDiv.style.display = "none";
+            passwordStrengthText.style.display = "none";
+        };
+
+        passwordInput.addEventListener('input', function () {
+            const val = passwordInput.value;
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[a-z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            let width = "0%";
+            let color = "bg-red-500";
+            let text = "Too weak";
+            if (score === 1) { width = "20%"; color = "bg-red-500"; text = "Very weak"; }
+            if (score === 2) { width = "40%"; color = "bg-orange-500"; text = "Weak"; }
+            if (score === 3) { width = "60%"; color = "bg-yellow-500"; text = "Medium"; }
+            if (score === 4) { width = "80%"; color = "bg-blue-500"; text = "Strong"; }
+            if (score === 5) { width = "100%"; color = "bg-green-600"; text = "Very strong"; }
+
+            strengthBar.style.width = width;
+            strengthBar.className = `h-2 rounded transition-all duration-300 ${color}`;
+            strengthText.textContent = text;
+        });
+
+        function showSpinner() {
+            document.getElementById('spinner-overlay').classList.remove('hidden');
+        }
+        function hideSpinner() {
+            document.getElementById('spinner-overlay').classList.add('hidden');
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastContent = document.getElementById('toast-content');
+            toastContent.textContent = message;
+            toastContent.className = `px-6 py-3 rounded shadow text-white text-center ${type === "success" ? "bg-green-600" : "bg-red-600"}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Navigation toggle script for mobile
+        document.getElementById('nav-toggle').onclick = function () {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('hidden');
+        };
+        // Optional: Hide menu when clicking a link (mobile)
+        document.querySelectorAll('#nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 640) {
+                    document.getElementById('nav-menu').classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ray-Yul Furniture</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBO7elH2BDo48m7wu1CCEh-ZIT-5i1EeUc",
+            authDomain: "ray-yul-furniture.firebaseapp.com",
+            projectId: "ray-yul-furniture",
+            storageBucket: "ray-yul-furniture.appspot.com",
+            messagingSenderId: "1009800722761",
+            appId: "1:1009800722761:web:258966e71e86dd9db40298",
+            measurementId: "G-F93Z8VX82E"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // Make admin actions global for inline onclick
+        window.approveBooking = async function (id) {
+            // Get the booking document
+            const bookingRef = db.collection('bookings').doc(id);
+            const bookingSnap = await bookingRef.get();
+            if (!bookingSnap.exists) return;
+            const booking = bookingSnap.data();
+
+            // Only proceed if not already approved
+            if (booking.status === "approved") {
+                showToast("Already approved.", "error");
+                return;
+            }
+
+            // Get the furniture document
+            const furnitureRef = db.collection('furnitures').doc(booking.furnitureId);
+            const furnitureSnap = await furnitureRef.get();
+            if (!furnitureSnap.exists) {
+                showToast("Furniture not found.", "error");
+                return;
+            }
+            const furniture = furnitureSnap.data();
+
+            // Check if enough stock is available
+            const newStock = (parseInt(furniture.stock, 10) || 0) - (parseInt(booking.quantity, 10) || 0);
+            if (newStock < 0) {
+                showToast("Not enough stock to approve this order.", "error");
+                return;
+            }
+
+            // Update both booking status and furniture stock in a batch
+            const batch = db.batch();
+            batch.update(bookingRef, { status: "approved" });
+            batch.update(furnitureRef, { stock: newStock });
+            await batch.commit();
+            showToast("Booking approved!", "success");
+            fetchAllBookings();
+        };
+        window.cancelBooking = async function (id) {
+            // Get the booking document
+            const bookingRef = db.collection('bookings').doc(id);
+            const bookingSnap = await bookingRef.get();
+            if (!bookingSnap.exists) return;
+            const booking = bookingSnap.data();
+
+            // Only restore stock if booking was approved
+            if (booking.status === "approved") {
+                // Get the furniture document
+                const furnitureRef = db.collection('furnitures').doc(booking.furnitureId);
+                const furnitureSnap = await furnitureRef.get();
+                if (!furnitureSnap.exists) {
+                    showToast("Furniture not found.", "error");
+                    return;
+                }
+                const furniture = furnitureSnap.data();
+                const restoredStock = (parseInt(furniture.stock, 10) || 0) + (parseInt(booking.quantity, 10) || 0);
+
+                // Update both booking status and furniture stock in a batch
+                const batch = db.batch();
+                batch.update(bookingRef, { status: "cancelled" });
+                batch.update(furnitureRef, { stock: restoredStock });
+                await batch.commit();
+                showToast("Booking cancelled!", "success");
+            } else {
+                // Just update status if not approved
+                await bookingRef.update({ status: "cancelled" });
+                showToast("Booking cancelled!", "success");
+            }
+
+            fetchAllBookings();
+        };
+        window.removeBooking = async function (id) {
+            if (confirm("Remove this booking?")) {
+                await db.collection('bookings').doc(id).delete();
+                showToast("Booking removed.", "success");
+                fetchAllBookings();
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <nav class="container mx-auto flex items-center justify-between py-2 px-2 sm:py-4 sm:px-4 relative">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <img src="images/logo.png" alt="Ray-Yul Logo" class="h-8 w-8 sm:h-14 sm:w-14 object-contain">
+                <h1 class="text-sm sm:text-xl md:text-2xl font-bold text-indigo-700 whitespace-nowrap">Ray-Yul Furniture
+                </h1>
+            </div>
+            <!-- Hamburger Icon (mobile only) -->
+            <button id="nav-toggle" class="sm:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="w-7 h-7 text-indigo-700" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <!-- Nav Links -->
+            <div id="nav-menu"
+                class="hidden sm:block absolute sm:static top-full left-0 w-full sm:w-auto bg-white sm:bg-transparent z-50 shadow sm:shadow-none">
+                <ul
+                    class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-base py-2 sm:py-0">
+                    <li><a href="index.html" class="hover:text-indigo-600 font-semibold block px-4 py-2 sm:p-0">Home</a>
+                    </li>
+                    <li><a href="about.html" class="hover:text-indigo-600 font-semibold block px-4 py-2 sm:p-0">About
+                            Us</a></li>
+                    <li><a href="bookings.html"
+                            class="hover:text-indigo-600 font-semibold block px-4 py-2 sm:p-0">Bookings</a></li>
+                    <li>
+                        <a href="#" id="login-btn"
+                            class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded hover:bg-indigo-700 transition block text-center w-full md:w-auto">
+                            Login
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-1">
+        <!-- Info Banner for Users -->
+        <div id="booking-info-banner"
+            class="container mx-auto px-4 py-4 mb-4 bg-indigo-50 border-l-4 border-indigo-400 text-indigo-800 rounded">
+            <span class="font-semibold">Note:</span> Please log in to view your orders and pre-orders. Once logged in,
+            all your bookings will appear below.
+        </div>
+        <!-- User Bookings Section -->
+        <section id="user-bookings" class="container mx-auto px-4 py-10 hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center">My Orders & Pre-orders</h2>
+            <div id="user-bookings-list" class="space-y-4"></div>
+        </section>
+
+        <!-- Admin Bookings Section (hidden for non-admins) -->
+        <section id="admin-bookings" class="container mx-auto px-4 py-10 hidden">
+            <h2 class="text-2xl font-bold mb-6 text-center">All Bookings</h2>
+            <!-- Add CSV export button -->
+            <button id="export-csv-btn"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mb-4">
+                Export Bookings as CSV
+            </button>
+            <div id="admin-bookings-list" class="space-y-4"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-auto">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-500">
+            &copy; 2025 Ray-Yul Furniture. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm">
+            <h3 class="text-xl font-bold mb-4" id="auth-title">Login</h3>
+            <form id="auth-form" class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email" class="w-full border rounded px-3 py-2"
+                    required>
+                <input type="password" id="auth-password" placeholder="Password" class="w-full border rounded px-3 py-2"
+                    required>
+                <!-- Add password strength indicator -->
+                <div id="password-strength" class="h-2 rounded bg-gray-200 mt-1">
+                    <div id="password-strength-bar" class="h-2 rounded transition-all duration-300"></div>
+                </div>
+                <div id="password-strength-text" class="text-xs mt-1"></div>
+                <div class="flex justify-between">
+                    <button type="submit" id="auth-submit"
+                        class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Login</button>
+                    <button type="button" id="toggle-auth" class="text-indigo-600 hover:underline">Sign Up</button>
+                </div>
+                <button type="button" id="forgot-password"
+                    class="text-sm text-indigo-600 hover:underline w-full text-left mt-2">Forgot Password?</button>
+            </form>
+            <button id="close-auth" class="mt-4 text-gray-500 hover:underline w-full">Close</button>
+            <div id="auth-error" class="text-red-500 mt-2"></div>
+        </div>
+    </div>
+
+    <!-- Spinner Overlay -->
+    <div id="spinner-overlay" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600 border-b-4 border-white"></div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden">
+        <div id="toast-content" class="px-6 py-3 rounded shadow text-white text-center"></div>
+    </div>
+
+    <script>
+        let furnitureMap = {};
+
+        async function fetchAllFurnitureForLookup() {
+            const snapshot = await db.collection('furnitures').get();
+            furnitureMap = {};
+            snapshot.docs.forEach(doc => {
+                furnitureMap[doc.id] = doc.data();
+            });
+        }
+
+        async function fetchUserBookings(userId) {
+            await fetchAllFurnitureForLookup();
+            console.log("Current user UID:", userId); // Debug: show current user's UID
+            const snapshot = await db.collection('bookings').where('userId', '==', userId).orderBy('createdAt', 'desc').get();
+            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            console.log("Bookings fetched for user:", bookings); // Debug: show bookings array
+            renderUserBookings(bookings);
+        }
+
+        function renderUserBookings(bookings) {
+            const list = document.getElementById('user-bookings-list');
+            list.innerHTML = '';
+            bookings.forEach(b => {
+                const furniture = furnitureMap[b.furnitureId] || {};
+                const furnitureName = furniture.name || "Unknown";
+                const furnitureImage = furniture.image ? `<img src="images/${furniture.image}" alt="${furnitureName}" class="h-16 w-16 object-cover rounded mb-2">` : '';
+                const bookingDiv = document.createElement('div');
+                bookingDiv.className = "bg-white rounded shadow p-4 flex items-center space-x-4";
+                bookingDiv.innerHTML = `
+            ${furnitureImage}
+            <div>
+              <div class="font-semibold">Furniture: ${furnitureName}</div>
+              <div>Quantity: ${b.quantity}</div>
+              <div>Advance Payment: <span class="font-semibold">${b.advanceAmount ? 'Nu.' + b.advanceAmount : '-'}</span></div>
+              <div>Journal No.: <span class="font-semibold">${b.journalNumber || '-'}</span></div>
+              <div>Status: <span class="font-bold ${b.status === 'approved' ? 'text-green-600' : b.status === 'cancelled' ? 'text-red-600' : 'text-yellow-600'}">${b.status}</span></div>
+              <div class="text-xs text-gray-400">Ordered on: ${b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().toLocaleString() : ''}</div>
+            </div>
+        `;
+                list.appendChild(bookingDiv);
+            });
+        }
+
+        const adminEmails = ["rayyulfurniture2023@gmail.com"]; // Add your admin email(s) here
+
+        async function fetchAllBookings() {
+            await fetchAllFurnitureForLookup();
+            const snapshot = await db.collection('bookings').orderBy('createdAt', 'desc').get();
+            const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAdminBookings(bookings);
+        }
+
+        function renderAdminBookings(bookings) {
+            const list = document.getElementById('admin-bookings-list');
+            list.innerHTML = '';
+            bookings.forEach(b => {
+                const furniture = furnitureMap[b.furnitureId] || {};
+                const furnitureName = furniture.name || "Unknown";
+                const furnitureImage = furniture.image ? `<img src="images/${furniture.image}" alt="${furnitureName}" class="h-16 w-16 object-cover rounded mb-2">` : '';
+                const bookingDiv = document.createElement('div');
+                bookingDiv.className = "bg-white rounded shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between";
+                bookingDiv.innerHTML = `
+            <div class="flex items-center space-x-4">
+              ${furnitureImage}
+              <div>
+                <div class="font-semibold">Furniture: ${furnitureName}</div>
+                <div>Name: ${b.fullname}</div>
+                <div>Mobile: ${b.mobile}</div>
+                <div>Address: ${b.address}</div>
+                <div>Quantity: ${b.quantity}</div>
+                <div>Advance Payment: <span class="font-semibold">${b.advanceAmount ? 'Nu.' + b.advanceAmount : '-'}</span></div>
+                <div>Journal No.: <span class="font-semibold">${b.journalNumber || '-'}</span></div>
+                <div>Status: <span class="font-bold ${b.status === 'approved' ? 'text-green-600' : b.status === 'cancelled' ? 'text-red-600' : 'text-yellow-600'}">${b.status}</span></div>
+                <div class="text-xs text-gray-400">Ordered on: ${b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().toLocaleString() : ''}</div>
+                <div class="text-xs text-gray-400">User ID: ${b.userId}</div>
+              </div>
+            </div>
+            <div class="flex space-x-2 mt-4 md:mt-0">
+              <button onclick="approveBooking('${b.id}')" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700" ${b.status === 'approved' ? 'disabled' : ''}>Approve</button>
+              <button onclick="cancelBooking('${b.id}')" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700" ${b.status === 'cancelled' ? 'disabled' : ''}>Cancel</button>
+              <button onclick="removeBooking('${b.id}')" class="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-600">Remove</button>
+            </div>
+        `;
+                list.appendChild(bookingDiv);
+            });
+        }
+
+        // Simple login/logout logic for the button
+        const loginBtn = document.getElementById('login-btn');
+        const authModal = document.getElementById('auth-modal');
+        const closeAuth = document.getElementById('close-auth');
+        const forgotPasswordBtn = document.getElementById('forgot-password');
+        const toggleAuth = document.getElementById('toggle-auth');
+        const authTitle = document.getElementById('auth-title');
+        const authSubmit = document.getElementById('auth-submit');
+        const authError = document.getElementById('auth-error');
+        let isLogin = true;
+
+        // Fix: Define authForm so it is available
+        const authForm = document.getElementById('auth-form');
+
+        // Only one toggleAuth handler
+        toggleAuth.onclick = () => {
+            isLogin = !isLogin;
+            authTitle.textContent = isLogin ? "Login" : "Sign Up";
+            toggleAuth.textContent = isLogin ? "Sign Up" : "Login";
+            authSubmit.textContent = isLogin ? "Login" : "Sign Up";
+            authError.textContent = "";
+            // Show forgot password only in Login mode
+            forgotPasswordBtn.classList.toggle('hidden', !isLogin);
+
+            // Show strength meter only in Sign Up mode
+            if (isLogin) {
+                passwordStrengthDiv.style.display = "none";
+                passwordStrengthText.style.display = "none";
+            } else {
+                passwordStrengthDiv.style.display = "block";
+                passwordStrengthText.style.display = "block";
+            }
+        };
+
+        // Always show forgot password in Login mode on modal open
+        loginBtn.onclick = (e) => {
+            e.preventDefault();
+            authModal.classList.remove('hidden');
+            isLogin = true;
+            authTitle.textContent = "Login";
+            toggleAuth.textContent = "Sign Up";
+            authSubmit.textContent = "Login";
+            authError.textContent = "";
+            forgotPasswordBtn.classList.remove('hidden');
+            passwordStrengthDiv.style.display = "none";
+            passwordStrengthText.style.display = "none";
+        };
+
+        firebase.auth().onAuthStateChanged(user => {
+            const infoBanner = document.getElementById('booking-info-banner');
+            const userBookingsSection = document.getElementById('user-bookings');
+            const adminBookingsSection = document.getElementById('admin-bookings');
+
+            if (user) {
+                loginBtn.textContent = "Logout";
+                loginBtn.onclick = (e) => {
+                    e.preventDefault();
+                    firebase.auth().signOut().then(() => {
+                        window.location.href = "index.html";
+                    });
+                };
+                authModal.classList.add('hidden');
+                infoBanner.classList.add('hidden'); // Hide info banner after login
+
+                // Show bookings UI
+                if (adminEmails.includes(user.email)) {
+                    adminBookingsSection.classList.remove('hidden');
+                    userBookingsSection.classList.add('hidden');
+                    fetchAllBookings();
+                } else {
+                    userBookingsSection.classList.remove('hidden');
+                    adminBookingsSection.classList.add('hidden');
+                    fetchUserBookings(user.uid);
+                }
+            } else {
+                loginBtn.textContent = "Login";
+                loginBtn.onclick = (e) => {
+                    e.preventDefault();
+                    authModal.classList.remove('hidden');
+                    isLogin = true;
+                    authTitle.textContent = "Login";
+                    toggleAuth.textContent = "Sign Up";
+                    authSubmit.textContent = "Login";
+                    authError.textContent = "";
+                    forgotPasswordBtn.classList.remove('hidden');
+                };
+                infoBanner.classList.remove('hidden'); // Show info banner before login
+                userBookingsSection.classList.add('hidden');
+                adminBookingsSection.classList.add('hidden');
+            }
+        });
+
+        closeAuth.onclick = () => authModal.classList.add('hidden');
+
+        toggleAuth.onclick = () => {
+            isLogin = !isLogin;
+            authTitle.textContent = isLogin ? "Login" : "Sign Up";
+            toggleAuth.textContent = isLogin ? "Sign Up" : "Login";
+            authSubmit.textContent = isLogin ? "Login" : "Sign Up";
+            authError.textContent = "";
+            // Show forgot password only in Login mode
+            forgotPasswordBtn.classList.toggle('hidden', !isLogin);
+        };
+
+        authForm.onsubmit = async (e) => {
+            e.preventDefault();
+            showSpinner();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            authError.textContent = "";
+            try {
+                if (isLogin) {
+                    await firebase.auth().signInWithEmailAndPassword(email, password);
+                    showToast("Login successful!", "success");
+                } else {
+                    await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    showToast("Signup successful!", "success");
+                }
+            } catch (err) {
+                authError.textContent = err.message;
+                showToast(err.message, "error");
+            }
+            hideSpinner();
+        };
+
+        forgotPasswordBtn.onclick = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            if (!email) {
+                authError.textContent = "Please enter your email above to reset password.";
+                showToast("Please enter your email above to reset password.", "error");
+                return;
+            }
+            try {
+                await firebase.auth().sendPasswordResetEmail(email);
+                authError.textContent = "Password reset email sent! Please check your inbox.";
+                authError.classList.remove("text-red-500");
+                authError.classList.add("text-green-600");
+                showToast("Password reset email sent!", "success");
+            } catch (err) {
+                authError.textContent = err.message;
+                authError.classList.remove("text-green-600");
+                authError.classList.add("text-red-500");
+                showToast(err.message, "error");
+            }
+        };
+
+        function showSpinner() {
+            document.getElementById('spinner-overlay').classList.remove('hidden');
+        }
+        function hideSpinner() {
+            document.getElementById('spinner-overlay').classList.add('hidden');
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastContent = document.getElementById('toast-content');
+            toastContent.textContent = message;
+            toastContent.className = `px-6 py-3 rounded shadow text-white text-center ${type === "success" ? "bg-green-600" : "bg-red-600"}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Hamburger menu toggle
+        document.getElementById('nav-toggle').onclick = function () {
+            const menu = document.getElementById('nav-menu');
+            menu.classList.toggle('hidden');
+        };
+        // Optional: Hide menu when clicking a link (mobile)
+        document.querySelectorAll('#nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 640) {
+                    document.getElementById('nav-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Export bookings as CSV (admin only)
+        if (document.getElementById('export-csv-btn')) {
+            document.getElementById('export-csv-btn').onclick = async function () {
+                showSpinner();
+                try {
+                    const snapshot = await db.collection('bookings').orderBy('createdAt', 'desc').get();
+                    const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (bookings.length === 0) {
+                        showToast("No bookings to export.", "error");
+                        hideSpinner();
+                        return;
+                    }
+                    // Prepare CSV
+                    const headers = Object.keys(bookings[0]);
+                    const csvRows = [
+                        headers.join(","),
+                        ...bookings.map(b => headers.map(h => `"${(b[h] !== undefined && b[h] !== null) ? String(b[h]).replace(/"/g, '""') : ""}"`).join(","))
+                    ];
+                    const csvContent = csvRows.join("\r\n");
+                    // Download
+                    const blob = new Blob([csvContent], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = "bookings.csv";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showToast("Bookings exported as CSV!", "success");
+                } catch (err) {
+                    showToast("Failed to export bookings.", "error");
+                }
+                hideSpinner();
+            };
+        }
+
+        // Password strength indicator
+        const passwordInput = document.getElementById('auth-password');
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        const passwordStrengthDiv = document.getElementById('password-strength');
+        const passwordStrengthText = document.getElementById('password-strength-text');
+
+        // Hide by default (since Login is default)
+        passwordStrengthDiv.style.display = "none";
+        passwordStrengthText.style.display = "none";
+
+        // Show/hide on toggle
+        toggleAuth.onclick = () => {
+            isLogin = !isLogin;
+            authTitle.textContent = isLogin ? "Login" : "Sign Up";
+            toggleAuth.textContent = isLogin ? "Sign Up" : "Login";
+            authSubmit.textContent = isLogin ? "Login" : "Sign Up";
+            authError.textContent = "";
+            forgotPasswordBtn.classList.toggle('hidden', !isLogin);
+
+            // Show strength meter only in Sign Up mode
+            if (isLogin) {
+                passwordStrengthDiv.style.display = "none";
+                passwordStrengthText.style.display = "none";
+            } else {
+                passwordStrengthDiv.style.display = "block";
+                passwordStrengthText.style.display = "block";
+            }
+        };
+
+        // Also hide on modal open for Login
+        loginBtn.onclick = (e) => {
+            e.preventDefault();
+            authModal.classList.remove('hidden');
+            isLogin = true;
+            authTitle.textContent = "Login";
+            toggleAuth.textContent = "Sign Up";
+            authSubmit.textContent = "Login";
+            authError.textContent = "";
+            forgotPasswordBtn.classList.remove('hidden');
+            passwordStrengthDiv.style.display = "none";
+            passwordStrengthText.style.display = "none";
+        };
+
+        passwordInput.addEventListener('input', function () {
+            const val = passwordInput.value;
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[a-z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            let width = "0%";
+            let color = "bg-red-500";
+            let text = "Too weak";
+            if (score === 1) { width = "20%"; color = "bg-red-500"; text = "Very weak"; }
+            if (score === 2) { width = "40%"; color = "bg-orange-500"; text = "Weak"; }
+            if (score === 3) { width = "60%"; color = "bg-yellow-500"; text = "Medium"; }
+            if (score === 4) { width = "80%"; color = "bg-blue-500"; text = "Strong"; }
+            if (score === 5) { width = "100%"; color = "bg-green-600"; text = "Very strong"; }
+
+            strengthBar.style.width = width;
+            strengthBar.className = `h-2 rounded transition-all duration-300 ${color}`;
+            strengthText.textContent = text;
+        });
+    </script>
+</body>
+
+</html>
